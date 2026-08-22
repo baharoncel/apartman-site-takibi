@@ -16,13 +16,21 @@
 
 ---
 
-## 📸 Ekran Görüntüleri & Özellikler
+## 📸 Ekran Görüntüleri & Canlı Arayüz
 
-| Yönetici Finans Dashboard'u | Komşu Pazarı (2. El Vitrini) |
+<div align="center">
+
+### 📊 1. Yönetici Finans Dashboard'u (Chart.js Grafikleri & Kasa)
+![Yönetici Finans Dashboard](docs/screenshots/dashboard.png)
+
+<br>
+
+| 🛒 Komşu Pazarı (2. El Vitrini) | 🧾 Resmi Aidat Tahsilat Makbuzu |
 | :---: | :---: |
-| *Aylık Gelir-Gider Bar & Donut Grafikleri* | *Sakinlerin ilan paylaştığı pazar yeri* |
-| **Resmi Aidat Tahsilat Makbuzu** | **Daire Sakini Portalı & Ödemeler** |
-| *Yazdırılabilir ve PDF uyumlu elektronik dekont* | *Kişisel borç durumu ve tesis rezervasyonları* |
+| ![Komşu Pazarı](docs/screenshots/marketplace.png) | ![Aidat Makbuzu](docs/screenshots/receipt.png) |
+| *Sakinlerin ilan paylaştığı pazar yeri* | *Yazdırılabilir ve PDF uyumlu elektronik dekont* |
+
+</div>
 
 ---
 
