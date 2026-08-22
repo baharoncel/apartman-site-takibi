@@ -76,7 +76,7 @@ Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları i
 
 ### 1. Repoyu Klonlayın
 ```bash
-git clone https://github.com/KULLANICI_ADINIZ/apartman-site-takibi.git
+git clone https://github.com/baharoncel/apartman-site-takibi.git
 cd apartman-site-takibi
 ```
 
