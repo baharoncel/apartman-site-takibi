@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Duyurular - AidatPro{% endblock %}
+{% block page_title %}Duyuru Panosu{% endblock %}
+
+{% block content %}
+<div class="card-grid">
+    {% for notice in notices %}
+    <div class="card">
+        <h3 style="color: var(--primary); margin-bottom: 0.5rem;">{{ notice.title }}</h3>
+        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+            {{ notice.date_posted|date:"d M Y - H:i" }}
+        </div>
+        <p style="color: var(--text-main); line-height: 1.5;">{{ notice.content }}</p>
+    </div>
+    {% empty %}
+    <p>Henüz yayınlanmış bir duyuru yok.</p>
+    {% endfor %}
+</div>
+{% endblock %}

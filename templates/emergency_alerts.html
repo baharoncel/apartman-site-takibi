@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Acil Durum & Kesinti Bildirimleri - AidatPro{% endblock %}
+{% block page_title %}🚨 Acil Durum & Kesinti Bildirimleri{% endblock %}
+
+{% block header_actions %}
+{% if request.user.is_staff %}
+<a href="{% url 'emergency_alert_create' %}" class="btn-sm btn-danger">+ Yeni Acil Durum / Uyarı Yayınla</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="emergency-list-container">
+    {% for alert in alerts %}
+    <div class="card alert-detail-card border-left-{{ alert.severity|lower }}" style="margin-bottom: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <span style="font-size: 2rem;">
+                    {% if alert.severity == 'DANGER' %}🚨
+                    {% elif alert.severity == 'WARNING' %}⚠️
+                    {% else %}ℹ️{% endif %}
+                </span>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.2rem;">{{ alert.title }}</h3>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                        <span>Yayınlanma: {{ alert.created_at|date:"d F Y - H:i" }}</span>
+                        <span>•</span>
+                        <span class="badge {% if alert.severity == 'DANGER' %}badge-danger{% elif alert.severity == 'WARNING' %}badge-warning{% else %}badge-info{% endif %}">
+                            {{ alert.get_severity_display }}
+                        </span>
+                        {% if alert.is_active %}
+                        <span class="badge badge-success">Yayında (Aktif)</span>
+                        {% else %}
+                        <span class="badge badge-secondary">Sona Erdi (Arşiv)</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if request.user.is_staff %}
+            <form method="POST" action="{% url 'emergency_alert_toggle' alert.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-sm {% if alert.is_active %}btn-outline{% else %}btn-primary{% endif %}">
+                    {% if alert.is_active %}Yayından Kaldır{% else %}Tekrar Aktifleştir{% endif %}
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 1rem; font-size: 0.95rem; line-height: 1.6; padding: 0.75rem; background: var(--bg); border-radius: 0.5rem;">
+            {{ alert.message|linebreaksbr }}
+        </div>
+    </div>
+    {% empty %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+        <h3>Aktif Bir Acil Durum veya Kesinti Bildirimi Yok</h3>
+        <p class="text-muted">Sitede her şey yolunda ve planlı bir kesinti bulunmuyor.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Finansal İşlem Ekle - AidatPro{% endblock %}
+{% block page_title %}Gelir / Gider Girişi{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">İşlem Tipi</label>
+            <select name="transaction_type" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+                <option value="INCOME">Gelir</option>
+                <option value="EXPENSE">Gider</option>
+            </select>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Tutar (TL)</label>
+            <input type="number" name="amount" step="0.01" required placeholder="Örn: 1500" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Açıklama</label>
+            <textarea name="description" rows="3" required placeholder="Örn: Ortak alan elektrik faturası ödemesi" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);"></textarea>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Fatura / Fiş (Görsel)</label>
+            <input type="file" name="receipt" accept="image/*" style="width:100%; padding:0.5rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">İşlem Kaydet</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Kredi Kartı ile Ödeme - AidatPro{% endblock %}
+{% block page_title %}Güvenli Ödeme Ekranı (Simülasyon){% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: auto;">
+    <h3 style="color:var(--primary); margin-bottom: 1rem;">Ödenecek Tutar: {{ due.amount }} TL</h3>
+    <p style="color:var(--text-muted); margin-bottom: 2rem;">Lütfen kredi kartı bilgilerinizi giriniz.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Kart Numarası</label>
+            <input type="text" placeholder="1234 5678 9101 1121" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+        </div>
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+            <div style="flex: 1;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:500;">SKT (Ay/Yıl)</label>
+                <input type="text" placeholder="12/26" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+            </div>
+            <div style="flex: 1;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:500;">CVV</label>
+                <input type="text" placeholder="123" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+            </div>
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:1rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%; font-size:1.1rem;">Güvenli Ödeme Yap ({{ due.amount }} TL)</button>
+    </form>
+</div>
+{% endblock %}

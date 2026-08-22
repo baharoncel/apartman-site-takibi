@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Rezervasyon Yap - AidatPro{% endblock %}
+{% block page_title %}Rezervasyon: {{ facility.name }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    {% if form.errors %}
+    <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 0.5rem; background: #FEE2E2; color: #991B1B; font-weight: 500; font-size: 0.875rem;">
+        {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+                <p>⚠️ {{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <p>⚠️ {{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Başlangıç Zamanı</label>
+            <input type="datetime-local" name="start_time" value="{{ form.start_time.value|default:'' }}" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Bitiş Zamanı</label>
+            <input type="datetime-local" name="end_time" value="{{ form.end_time.value|default:'' }}" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">Rezervasyon Oluştur</button>
+    </form>
+</div>
+{% endblock %}

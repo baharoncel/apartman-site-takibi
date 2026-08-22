@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Araç Yönetimi - AidatPro{% endblock %}
+{% block page_title %}Araç Yönetimi{% endblock %}
+
+{% block header_actions %}
+    {% if not request.user.is_staff %}
+    <a href="{% url 'vehicle_create' %}" style="padding:0.75rem 1.5rem; background:var(--primary); color:white; border-radius:0.5rem; text-decoration:none; font-weight:600;">+ Yeni Araç Ekle</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                {% if request.user.is_staff %}<th>Sakin (Daire)</th>{% endif %}
+                <th>Plaka</th>
+                <th>Marka / Model</th>
+                <th>Renk</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+            <tr>
+                {% if request.user.is_staff %}
+                <td>{{ vehicle.resident.first_name }} {{ vehicle.resident.last_name }} ({{ vehicle.resident.flat_number }})</td>
+                {% endif %}
+                <td><strong>{{ vehicle.license_plate }}</strong></td>
+                <td>{{ vehicle.brand_model }}</td>
+                <td>{{ vehicle.color|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Henüz kayıtlı araç bulunmuyor.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

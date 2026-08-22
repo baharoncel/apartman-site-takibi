@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Sakin Portalı - AidatPro{% endblock %}
+{% block page_title %}Hoş Geldiniz, {{ request.user.first_name }} {{ request.user.last_name }}{% endblock %}
+
+{% block header_actions %}
+<div style="display:flex; gap:0.5rem;">
+    <a href="{% url 'marketplace_create' %}" class="btn-sm btn-outline">🛒 İlan Ver</a>
+    <a href="{% url 'complaint_create' %}" class="btn-sm btn-primary">✉️ İstek / Şikayet Yaz</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card-grid">
+    <div class="card stat-card {% if my_unpaid > 0 %}border-left-danger{% else %}border-left-success{% endif %}">
+        <div class="stat-icon">💳</div>
+        <div>
+            <div class="card-title">Ödenmemiş Borç Toplamı</div>
+            <div class="card-value {% if my_unpaid > 0 %}text-danger{% else %}text-success{% endif %}">
+                {{ my_unpaid|floatformat:2 }} TL
+            </div>
+            <div class="card-hint">
+                {% if my_unpaid > 0 %}
+                ⚠️ Lütfen gecikmeye girmeden ödeyiniz
+                {% else %}
+                ✅ Tüm aidatlarınız güncel, borcunuz bulunmuyor
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card stat-card border-left-primary">
+        <div class="stat-icon">🏡</div>
+        <div>
+            <div class="card-title">Daire Bilgisi</div>
+            <div class="card-value text-primary">Daire {{ request.user.resident.flat_number }}</div>
+            <div class="card-hint">{{ request.user.resident.phone_number|default:"Telefon girilmedi" }}</div>
+        </div>
+    </div>
+
+    <div class="card stat-card border-left-success">
+        <div class="stat-icon">🧾</div>
+        <div>
+            <div class="card-title">Ödenmiş Toplam Aidat</div>
+            <div class="card-value text-success">{{ my_paid|floatformat:2 }} TL</div>
+            <div class="card-hint">Geçmiş ödemeler</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Shortcuts -->
+<div class="quick-shortcuts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <a href="{% url 'marketplace' %}" class="shortcut-card">
+        <span class="shortcut-icon">🛒</span>
+        <span class="shortcut-text">Komşu Pazarı</span>
+    </a>
+    <a href="{% url 'facilities' %}" class="shortcut-card">
+        <span class="shortcut-icon">🎾</span>
+        <span class="shortcut-text">Tesis Rezervasyonu</span>
+    </a>
+    <a href="{% url 'vehicles' %}" class="shortcut-card">
+        <span class="shortcut-icon">🚗</span>
+        <span class="shortcut-text">Araçlarım</span>
+    </a>
+    <a href="{% url 'pets' %}" class="shortcut-card">
+        <span class="shortcut-icon">🐾</span>
+        <span class="shortcut-text">Evcil Hayvanlarım</span>
+    </a>
+    <a href="{% url 'profile' %}" class="shortcut-card">
+        <span class="shortcut-icon">👤</span>
+        <span class="shortcut-text">Profil & Ayarlar</span>
+    </a>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div class="table-container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.25rem; margin:0;">💰 Aidat & Ödeme Hareketlerim</h2>
+            <a href="{% url 'dues' %}" class="btn-sm btn-outline">Tümünü Gör</a>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tutar</th>
+                    <th>Kesim Tarihi</th>
+                    <th>Son Ödeme</th>
+                    <th>Durum & İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for due in my_dues %}
+                <tr>
+                    <td><strong>{{ due.amount|floatformat:2 }} TL</strong></td>
+                    <td>{{ due.issue_date|date:"d.m.Y" }}</td>
+                    <td>{{ due.due_date|date:"d.m.Y" }}</td>
+                    <td>
+                        {% if due.is_paid %}
+                        <span class="badge badge-success">Ödendi</span>
+                        <a href="{% url 'receipt_view' due.pk %}" class="btn-sm btn-outline" style="margin-left:0.5rem;">🧾 Dekont</a>
+                        {% else %}
+                        <span class="badge badge-danger" style="margin-right: 0.5rem;">Bekliyor</span>
+                        <a href="{% url 'pay_due' due.pk %}" class="btn-sm btn-primary">💳 Hemen Öde</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center">Kayıtlı aidatınız bulunmuyor.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="table-container">
+            <h2 style="margin-bottom: 1rem; font-size: 1.1rem;">📌 Son Duyurular</h2>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for notice in recent_notices %}
+                <div class="notice-item-mini">
+                    <div style="font-weight: 600; color: var(--primary);">{{ notice.title }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">{{ notice.date_posted|date:"d M Y" }}</div>
+                </div>
+                {% empty %}
+                <p class="text-muted">Güncel duyuru yok.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2 style="margin-bottom: 1rem; font-size: 1.1rem;">🛒 Pazar Yeri Fırsatları</h2>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for item in recent_marketplace %}
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:0.4rem;">
+                    <div>
+                        <div style="font-weight:600; font-size:0.875rem;">{{ item.title }}</div>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">{{ item.get_item_type_display }}</span>
+                    </div>
+                    <span class="badge badge-primary">
+                        {% if item.price %}{{ item.price }} TL{% else %}Ücretsiz{% endif %}
+                    </span>
+                </div>
+                {% empty %}
+                <p class="text-muted" style="font-size:0.85rem;">Henüz pazar ilanı yok.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

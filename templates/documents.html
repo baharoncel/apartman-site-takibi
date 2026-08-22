@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Karar Defteri & Belgeler - AidatPro{% endblock %}
+{% block page_title %}Site Belgeleri{% endblock %}
+
+{% block content %}
+<div class="card-grid">
+    {% for doc in documents %}
+    <div class="card">
+        <h3 style="color:var(--primary); margin-bottom:1rem;">📄 {{ doc.title }}</h3>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">Tarih: {{ doc.upload_date|date:"d M Y" }}</p>
+        <a href="{{ doc.file.url }}" target="_blank" style="display:block; text-align:center; padding:0.75rem; text-decoration:none; background:var(--primary); color:white; border-radius:0.5rem;">İndir / Görüntüle</a>
+    </div>
+    {% empty %}
+    <p>Henüz yüklenmiş belge bulunmuyor.</p>
+    {% endfor %}
+</div>
+{% endblock %}

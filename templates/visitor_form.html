@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Ziyaretçi Kaydı - AidatPro{% endblock %}
+{% block page_title %}Yeni Ziyaretçi / Kargo Ekle{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Ziyaretçi / Firma Adı</label>
+            <input type="text" name="visitor_name" required placeholder="Örn: Ahmet Yılmaz / Yurtiçi Kargo" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Ziyaret Tipi</label>
+            <select name="visitor_type" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+                <option value="GUEST">Misafir</option>
+                <option value="CARGO">Kargo / Teslimat</option>
+                <option value="SERVICE">Servis / Tamir</option>
+            </select>
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">Kaydet</button>
+    </form>
+</div>
+{% endblock %}

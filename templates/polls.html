@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Anketler - AidatPro{% endblock %}
+{% block page_title %}Aktif Anketler{% endblock %}
+
+{% block content %}
+<div class="card-grid">
+    {% for poll in polls %}
+    <div class="card">
+        <h3 style="color:var(--primary); margin-bottom:1rem;">{{ poll.question }}</h3>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">Bitiş: {{ poll.end_date|date:"d M Y" }}</p>
+        <form method="post" action="{% url 'vote_poll' poll.pk %}">
+            {% csrf_token %}
+            {% for choice in poll.choices.all %}
+            <div style="margin-bottom:0.5rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="radio" name="choice" value="{{ choice.pk }}" {% if request.user.resident in choice.votes.all %}checked{% endif %}>
+                    {{ choice.choice_text }} ({{ choice.vote_count }} oy)
+                </label>
+            </div>
+            {% endfor %}
+            <button type="submit" style="background:var(--primary); color:white; padding:0.5rem; border:none; border-radius:0.5rem; cursor:pointer; margin-top:1rem; width:100%;">Oy Ver</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Şu an aktif bir anket bulunmuyor.</p>
+    {% endfor %}
+</div>
+{% endblock %}

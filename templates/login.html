@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - AidatPro</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        .login-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: var(--glass-shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-main);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1 style="color: var(--primary); margin-bottom: 2rem;">Aidat<span style="color:var(--text-main)">Pro</span></h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Kullanıcı Adı (Daire No veya Admin)</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Giriş Yap</button>
+            </form>
+            <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <a href="/admin/" style="color: var(--primary); font-size: 0.875rem; text-decoration: none; font-weight: 500;">⚙️ Gelişmiş Veritabanı Yönetimi (Django Admin)</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

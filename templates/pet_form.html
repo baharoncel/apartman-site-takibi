@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Evcil Hayvan Kaydı - AidatPro{% endblock %}
+{% block page_title %}Yeni Evcil Hayvan Ekle{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem;">Adı</label>
+            <input type="text" name="pet_name" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem;">Türü / Cinsi (Örn: Golden Köpek)</label>
+            <input type="text" name="pet_type" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem;">Özel Not / Aşı Durumu</label>
+            <textarea name="notes" rows="3" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);"></textarea>
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">Kaydet</button>
+    </form>
+</div>
+{% endblock %}

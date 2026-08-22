@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aidat & Site Yönetim Sistemi{% endblock %} - AidatPro</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <script>
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark-theme");
+        }
+    </script>
+    <nav class="sidebar">
+        <div class="logo">
+            🏢 Aidat<span>Pro</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{% url 'dashboard' %}" class="nav-item">📊 Ana Panel</a></li>
+            
+            {% if request.user.is_staff %}
+            <div class="sidebar-heading">YÖNETİM & FİNANS</div>
+            <li><a href="{% url 'admin_dashboard' %}" class="nav-item">⚙️ Finans & Raporlar</a></li>
+            <li><a href="{% url 'dues' %}" class="nav-item">💰 Aidatlar & Borçlar</a></li>
+            <li><a href="{% url 'transactions' %}" class="nav-item">📈 Kasa / Gelir-Gider</a></li>
+            <li><a href="{% url 'residents' %}" class="nav-item">👥 Daire Sakinleri</a></li>
+            <li><a href="{% url 'staff' %}" class="nav-item">👷 Personeller</a></li>
+            <li><a href="{% url 'tasks' %}" class="nav-item">📋 İş Emirleri</a></li>
+            <li><a href="{% url 'inventory' %}" class="nav-item">🛠️ Demirbaşlar</a></li>
+            {% endif %}
+
+            <div class="sidebar-heading">SİTE YAŞAMI</div>
+            <li><a href="{% url 'marketplace' %}" class="nav-item">🛒 Komşu Pazarı (2. El)</a></li>
+            <li><a href="{% url 'emergency_alerts' %}" class="nav-item">🚨 Acil Durum & Uyarılar</a></li>
+            <li><a href="{% url 'notices' %}" class="nav-item">📌 Duyurular</a></li>
+            <li><a href="{% url 'polls' %}" class="nav-item">🗳️ Anket & Oylama</a></li>
+            <li><a href="{% url 'complaints' %}" class="nav-item">✉️ İstek & Şikayet</a></li>
+            <li><a href="{% url 'messages' %}" class="nav-item">💬 Komşu Panosu</a></li>
+            <li><a href="{% url 'facilities' %}" class="nav-item">🎾 Sosyal Tesisler</a></li>
+            <li><a href="{% url 'visitors' %}" class="nav-item">📦 Kargo & Ziyaretçi</a></li>
+            <li><a href="{% url 'vehicles' %}" class="nav-item">🚗 Araç & Otopark</a></li>
+            <li><a href="{% url 'pets' %}" class="nav-item">🐾 Evcil Hayvanlar</a></li>
+            <li><a href="{% url 'documents' %}" class="nav-item">📄 Belgeler & Kararlar</a></li>
+            <li><a href="{% url 'suppliers' %}" class="nav-item">📞 Acil & Rehber</a></li>
+            
+            {% if request.user.is_authenticated %}
+            <div class="sidebar-heading">HESAP</div>
+            <li><a href="{% url 'profile' %}" class="nav-item">👤 Profilim & Ayarlar</a></li>
+            <li style="margin-top: 1rem;"><a href="{% url 'logout' %}" class="nav-item" style="color:#EF4444;">🚪 Güvenli Çıkış</a></li>
+            {% endif %}
+        </ul>
+        <div class="theme-toggle-container">
+            <button id="theme-toggle-btn" class="theme-toggle-btn">🌙 Karanlık Mod</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% if request.user.is_authenticated %}
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-user">
+                <span class="user-avatar-badge">
+                    {% if request.user.resident.profile_picture %}
+                        <img src="{{ request.user.resident.profile_picture.url }}" alt="Avatar" style="width:28px; height:28px; border-radius:50%; object-fit:cover; margin-right:6px; vertical-align:middle;">
+                    {% else %}
+                        👤
+                    {% endif %}
+                </span>
+                Merhaba, <strong>{{ request.user.first_name|default:request.user.username }}</strong>
+                {% if request.user.is_staff %}
+                    <span class="badge badge-staff">Yönetici</span>
+                {% else %}
+                    <span class="badge badge-resident">Daire {{ request.user.resident.flat_number }}</span>
+                {% endif %}
+            </div>
+            <div class="header-info">
+                {% if request.user.is_staff %}
+                <a href="{% url 'bulk_due_create' %}" class="btn-sm btn-primary">+ Toplu Aidat</a>
+                <a href="{% url 'transaction_create' %}" class="btn-sm btn-secondary">+ Kasa İşlemi</a>
+                {% endif %}
+                <span class="date-badge">🗓️ {% now "d F Y, l" %}</span>
+                <a href="{% url 'profile' %}" class="btn-sm btn-outline">⚙️ Hesabım</a>
+            </div>
+        </header>
+        {% endif %}
+
+        <!-- Flash Messages (Toasts) -->
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <span class="alert-icon">
+                    {% if message.tags == 'success' %}✅
+                    {% elif message.tags == 'error' %}⚠️
+                    {% elif message.tags == 'info' %}ℹ️
+                    {% else %}🔔{% endif %}
+                </span>
+                <span class="alert-text">{{ message }}</span>
+                <button type="button" class="alert-close" onclick="this.parentElement.remove();">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Emergency Alert Banner -->
+        {% if active_alerts %}
+        <div class="emergency-alerts-banner">
+            {% for alert in active_alerts %}
+            <div class="emergency-alert-card severity-{{ alert.severity|lower }}">
+                <div class="emergency-icon">
+                    {% if alert.severity == 'DANGER' %}🚨
+                    {% elif alert.severity == 'WARNING' %}⚠️
+                    {% else %}ℹ️{% endif %}
+                </div>
+                <div class="emergency-content">
+                    <strong>{{ alert.title }}:</strong> {{ alert.message }}
+                    <span class="emergency-time">({{ alert.created_at|timesince }} önce)</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="page-header">
+            <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="header-actions">
+                {% block header_actions %}{% endblock %}
+            </div>
+        </div>
+
+        {% block content %}{% endblock %}
+
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p><strong>AidatPro</strong> &copy; 2026 - Akıllı Apartman & Site Yönetim Otomasyonu.</p>
+                <div class="footer-links">
+                    <span>🏢 Güvenli Site Altyapısı</span>
+                    <span>•</span>
+                    <span>Destek: <a href="mailto:destek@aidatpro.com">destek@aidatpro.com</a></span>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="{% static 'scripts.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

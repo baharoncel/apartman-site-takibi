@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Yönetici Ana Paneli - AidatPro{% endblock %}
+{% block page_title %}Yönetici Kontrol Paneli{% endblock %}
+
+{% block header_actions %}
+<div style="display: flex; gap: 0.5rem;">
+    <a href="{% url 'export_dues_csv' %}" class="btn-sm btn-outline">📥 Aidat Listesi (Excel)</a>
+    <a href="{% url 'export_transactions_csv' %}" class="btn-sm btn-outline">📥 Kasa Dökümü (Excel)</a>
+    <a href="{% url 'bulk_due_create' %}" class="btn-sm btn-primary">+ Toplu Aidat</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- KPI Metric Cards -->
+<div class="card-grid">
+    <div class="card stat-card border-left-danger">
+        <div class="stat-icon">⏳</div>
+        <div>
+            <div class="card-title">Tahsil Edilecek Aidatlar</div>
+            <div class="card-value text-danger">{{ unpaid_dues_total|floatformat:2 }} TL</div>
+            <div class="card-hint"><a href="{% url 'dues' %}">Borçluları Gör &rarr;</a></div>
+        </div>
+    </div>
+    <div class="card stat-card border-left-success">
+        <div class="stat-icon">💰</div>
+        <div>
+            <div class="card-title">Toplam Kasa Geliri</div>
+            <div class="card-value text-success">{{ total_income|floatformat:2 }} TL</div>
+            <div class="card-hint">{{ paid_dues_total|floatformat:2 }} TL aidat tahsilatı</div>
+        </div>
+    </div>
+    <div class="card stat-card border-left-warning">
+        <div class="stat-icon">💸</div>
+        <div>
+            <div class="card-title">Toplam Kasa Gideri</div>
+            <div class="card-value text-danger">{{ total_expense|floatformat:2 }} TL</div>
+            <div class="card-hint"><a href="{% url 'transactions' %}">Gider Detayları &rarr;</a></div>
+        </div>
+    </div>
+    <div class="card stat-card border-left-primary">
+        <div class="stat-icon">🏦</div>
+        <div>
+            <div class="card-title">Net Kasa Bakiyesi</div>
+            <div class="card-value {% if net_balance >= 0 %}text-success{% else %}text-danger{% endif %}">{{ net_balance|floatformat:2 }} TL</div>
+            <div class="card-hint">Mevcut nakit mevcudu</div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Chart.js Section -->
+<div class="charts-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card chart-box">
+        <div class="chart-header">
+            <h3>📈 Aylık Gelir & Gider Karşılaştırması</h3>
+            <span class="badge badge-info">Son 6 Ay</span>
+        </div>
+        <div style="position: relative; height: 280px;">
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card chart-box">
+        <div class="chart-header">
+            <h3>🍩 Aidat Tahsilat Oranı</h3>
+            <span class="badge badge-primary">Genel Durum</span>
+        </div>
+        <div style="position: relative; height: 280px;">
+            <canvas id="duesDonutChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div class="table-container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="font-size: 1.25rem; margin:0;">📊 Son Kasa Hareketleri</h2>
+            <a href="{% url 'transactions' %}" class="btn-sm btn-outline">Tümünü Gör</a>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Açıklama</th>
+                    <th>Tutar</th>
+                    <th>Tip</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in recent_transactions %}
+                <tr>
+                    <td>{{ tx.date|date:"d.m.Y" }}</td>
+                    <td><strong>{{ tx.description }}</strong></td>
+                    <td class="{% if tx.transaction_type == 'INCOME' %}text-success{% else %}text-danger{% endif %}">
+                        {% if tx.transaction_type == 'INCOME' %}+{% else %}-{% endif %}{{ tx.amount|floatformat:2 }} TL
+                    </td>
+                    <td>
+                        <span class="badge {% if tx.transaction_type == 'INCOME' %}badge-success{% else %}badge-danger{% endif %}">
+                            {{ tx.get_transaction_type_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center">Henüz finans işlemi bulunmuyor.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Son Duyurular -->
+        <div class="table-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h2 style="font-size: 1.1rem; margin:0;">📌 Güncel Duyurular</h2>
+                <a href="{% url 'notices' %}" style="font-size:0.8rem; color:var(--primary);">Tümü</a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for notice in recent_notices %}
+                <div class="notice-item-mini">
+                    <div style="font-weight: 600; color: var(--primary);">{{ notice.title }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">{{ notice.date_posted|date:"d M Y, H:i" }}</div>
+                </div>
+                {% empty %}
+                <p class="text-muted" style="font-size:0.875rem;">Güncel duyuru yok.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 2. El Pazarından Yeni İlanlar -->
+        <div class="table-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h2 style="font-size: 1.1rem; margin:0;">🛒 Komşu Pazarından</h2>
+                <a href="{% url 'marketplace' %}" style="font-size:0.8rem; color:var(--primary);">Pazara Git</a>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0.6rem;">
+                {% for item in recent_marketplace %}
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <div>
+                        <div style="font-weight:600; font-size:0.875rem;">{{ item.title }}</div>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">Daire {{ item.resident.flat_number }}</span>
+                    </div>
+                    <span class="badge badge-primary">
+                        {% if item.price %}{{ item.price }} TL{% else %}Ücretsiz{% endif %}
+                    </span>
+                </div>
+                {% empty %}
+                <p class="text-muted" style="font-size:0.875rem;">Henüz pazar ilanı bulunmuyor.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Gelir - Gider Karşılaştırma Bar Grafiği
+    const incomeExpenseCtx = document.getElementById('incomeExpenseChart');
+    if (incomeExpenseCtx) {
+        const labels = {{ chart_labels_json|safe }};
+        const incomeData = {{ chart_income_json|safe }};
+        const expenseData = {{ chart_expense_json|safe }};
+
+        new Chart(incomeExpenseCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Gelir (TL)',
+                        data: incomeData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                        borderColor: '#10B981',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Gider (TL)',
+                        data: expenseData,
+                        backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                        borderColor: '#EF4444',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return value + ' TL'; }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Aidat Tahsilat Donut Grafiği
+    const duesCtx = document.getElementById('duesDonutChart');
+    if (duesCtx) {
+        const duesStatusData = {{ chart_dues_status_json|safe }};
+        new Chart(duesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tahsil Edilen', 'Bekleyen Aidat'],
+                datasets: [{
+                    data: duesStatusData,
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.85)',
+                        'rgba(239, 68, 68, 0.85)'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Demirbaş Takibi - AidatPro{% endblock %}
+{% block page_title %}Demirbaş ve Envanter{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Demirbaş Adı</th>
+                <th>Bulunduğu Yer</th>
+                <th>Alım Tarihi</th>
+                <th>Garanti Bitiş</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in inventory_items %}
+            <tr>
+                <td><strong>{{ item.item_name }}</strong></td>
+                <td>{{ item.location }}</td>
+                <td>{{ item.purchase_date|date:"d.m.Y"|default:"-" }}</td>
+                <td>{{ item.warranty_end|date:"d.m.Y"|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Demirbaş kaydı bulunmuyor.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Evcil Hayvanlar - AidatPro{% endblock %}
+{% block page_title %}Site Sakini Evcil Hayvanları{% endblock %}
+
+{% block header_actions %}
+    {% if not request.user.is_staff %}
+    <a href="{% url 'pet_create' %}" class="nav-item" style="background:var(--primary); color:white;">+ Kayıt Ekle</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card-grid">
+    {% for pet in pets %}
+    <div class="card">
+        <h3 style="color:var(--primary); margin-bottom:0.5rem;">🐾 {{ pet.pet_name }}</h3>
+        <p><strong>Tür/Cins:</strong> {{ pet.pet_type }}</p>
+        <p><strong>Sahibi:</strong> Daire {{ pet.resident.flat_number }} ({{ pet.resident.first_name }})</p>
+        {% if pet.notes %}
+        <p style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-muted);"><em>Not: {{ pet.notes }}</em></p>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p>Kayıtlı evcil hayvan bulunmuyor.</p>
+    {% endfor %}
+</div>
+{% endblock %}

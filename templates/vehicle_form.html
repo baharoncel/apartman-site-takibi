@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Araç Ekle - AidatPro{% endblock %}
+{% block page_title %}Yeni Araç Kaydı{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Plaka</label>
+            <input type="text" name="license_plate" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Marka / Model</label>
+            <input type="text" name="brand_model" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Renk</label>
+            <input type="text" name="color" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);">
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">Kaydet</button>
+    </form>
+</div>
+{% endblock %}

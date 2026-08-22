@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Görev Yönetimi - AidatPro{% endblock %}
+{% block page_title %}İş Emirleri ve Görevler{% endblock %}
+
+{% block header_actions %}
+    {% if request.user.is_staff %}
+    <a href="{% url 'task_create' %}" style="padding:0.75rem 1.5rem; background:var(--primary); color:white; border-radius:0.5rem; text-decoration:none; font-weight:600;">+ Yeni Görev Ata</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Görev Başlığı</th>
+                <th>Görev Detayı</th>
+                <th>Sorumlu Personel</th>
+                <th>Durum</th>
+                <th>Tarih</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td><strong>{{ task.title }}</strong></td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.staff.first_name }} {{ task.staff.last_name }}</td>
+                <td>
+                    <form action="{% url 'task_status_update' task.pk %}" method="post" style="display:inline-flex; gap:0.5rem; align-items:center;">
+                        {% csrf_token %}
+                        <select name="status" onchange="this.form.submit()" style="padding:0.25rem 0.5rem; border-radius:0.375rem; border:1px solid var(--border-color); background:rgba(255,255,255,0.7); color:var(--text-main); font-size:0.875rem; font-weight:500;">
+                            <option value="PENDING" {% if task.status == 'PENDING' %}selected{% endif %}>Bekliyor</option>
+                            <option value="IN_PROGRESS" {% if task.status == 'IN_PROGRESS' %}selected{% endif %}>Yapılıyor</option>
+                            <option value="DONE" {% if task.status == 'DONE' %}selected{% endif %}>Tamamlandı</option>
+                        </select>
+                    </form>
+                </td>
+                <td>{{ task.date_assigned|date:"d.m.Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Kayıtlı görev bulunmuyor.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

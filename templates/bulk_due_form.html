@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Toplu Aidat Oluştur - AidatPro{% endblock %}
+{% block page_title %}Toplu Aidat Oluştur{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <p style="margin-bottom: 1.5rem; color:var(--text-muted); font-size: 0.95rem;">
+        ⚠️ Bu formu gönderdiğinizde, sistemde kayıtlı olan <strong>tüm daire sakinleri</strong> için belirtilen tutarda yeni bir aidat borcu oluşturulacaktır.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Aidat Tutarı (TL)</label>
+            <input type="number" name="amount" step="0.01" required placeholder="Örn: 500" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Kesim Tarihi</label>
+            <input type="date" name="issue_date" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Son Ödeme Tarihi</label>
+            <input type="date" name="due_date" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5); color:var(--text-main);">
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">Toplu Aidat Tanımla</button>
+    </form>
+</div>
+{% endblock %}

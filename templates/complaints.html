@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}İstek ve Şikayetler - AidatPro{% endblock %}
+{% block page_title %}İstek ve Şikayetler{% endblock %}
+
+{% block header_actions %}
+    {% if not request.user.is_staff %}
+    <a href="{% url 'complaint_create' %}" style="padding:0.75rem 1.5rem; background:var(--primary); color:white; border-radius:0.5rem; text-decoration:none; font-weight:600;">+ Yeni Talep Oluştur</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                {% if request.user.is_staff %}<th>Sakin (Daire)</th>{% endif %}
+                <th>Konu</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                {% if request.user.is_staff %}
+                <td>{{ complaint.resident.first_name }} {{ complaint.resident.last_name }} ({{ complaint.resident.flat_number }})</td>
+                {% endif %}
+                <td><strong>{{ complaint.title }}</strong><br><small style="color:var(--text-muted);">{{ complaint.description }}</small></td>
+                <td>{{ complaint.date_submitted|date:"d.m.Y H:i" }}</td>
+                <td>
+                    {% if complaint.status == 'RESOLVED' %}
+                    <span class="badge success">Çözüldü</span>
+                    {% else %}
+                    <span class="badge danger" style="margin-right: 0.5rem;">Bekliyor</span>
+                    {% if request.user.is_staff %}
+                    <form action="{% url 'complaint_resolve' complaint.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="padding:0.25rem 0.5rem; background:var(--primary); color:white; border:none; border-radius:0.25rem; font-size:0.75rem; font-weight:600; cursor:pointer;">Çözüldü Yap</button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Henüz kayıtlı istek/şikayet bulunmuyor.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

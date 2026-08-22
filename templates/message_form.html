@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Mesaj Yaz - AidatPro{% endblock %}
+{% block page_title %}Panoya Mesaj Yaz{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Mesajınız</label>
+            <textarea name="content" rows="5" required style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color); background: rgba(255,255,255,0.5);"></textarea>
+        </div>
+        <button type="submit" style="background:var(--primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; font-weight:600; width:100%;">Mesajı Paylaş</button>
+    </form>
+</div>
+{% endblock %}

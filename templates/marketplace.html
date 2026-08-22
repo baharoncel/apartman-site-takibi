@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Komşu Pazarı & 2. El İlanlar - AidatPro{% endblock %}
+{% block page_title %}🛒 Komşu Pazarı & İlanlar{% endblock %}
+
+{% block header_actions %}
+<div style="display:flex; gap:0.5rem;">
+    <a href="{% url 'marketplace_create' %}" class="btn-sm btn-primary">+ Yeni İlan Ver</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Search & Filter Bar -->
+<div class="filter-bar card" style="margin-bottom: 1.5rem; padding: 1rem;">
+    <form method="GET" action="{% url 'marketplace' %}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="🔍 Ürün veya ilan ara..." style="flex: 1; min-width: 200px; padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem;">
+        
+        <select name="type" style="padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; background: var(--card-bg); color: var(--text);">
+            <option value="">Tüm İlan Tipleri</option>
+            <option value="FOR_SALE" {% if request.GET.type == 'FOR_SALE' %}selected{% endif %}>Satılık</option>
+            <option value="FOR_RENT" {% if request.GET.type == 'FOR_RENT' %}selected{% endif %}>Kiralık</option>
+            <option value="FREE" {% if request.GET.type == 'FREE' %}selected{% endif %}>Ücretsiz / Bağış</option>
+        </select>
+
+        <button type="submit" class="btn-sm btn-primary">Filtrele</button>
+        {% if request.GET.q or request.GET.type %}
+        <a href="{% url 'marketplace' %}" class="btn-sm btn-outline">Temizle</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Marketplace Items Grid -->
+<div class="marketplace-grid">
+    {% for item in items %}
+    <div class="marketplace-card card {% if item.is_sold %}item-sold{% endif %}">
+        <div class="marketplace-image-box">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="marketplace-img">
+            {% else %}
+            <div class="marketplace-img-placeholder">
+                <span>📦</span>
+            </div>
+            {% endif %}
+            <span class="marketplace-type-badge badge {% if item.item_type == 'FOR_SALE' %}badge-primary{% elif item.item_type == 'FREE' %}badge-success{% else %}badge-info{% endif %}">
+                {{ item.get_item_type_display }}
+            </span>
+            {% if item.is_sold %}
+            <div class="sold-overlay">KAPANDI / SATILDI</div>
+            {% endif %}
+        </div>
+
+        <div class="marketplace-body">
+            <div class="marketplace-price">
+                {% if item.price %}
+                    {{ item.price|floatformat:2 }} TL
+                {% else %}
+                    <span class="text-success" style="font-weight: 700;">Ücretsiz / Hediye</span>
+                {% endif %}
+            </div>
+            <h3 class="marketplace-title">{{ item.title }}</h3>
+            <p class="marketplace-desc">{{ item.description|truncatewords:20 }}</p>
+
+            <div class="marketplace-meta">
+                <span>🏡 Daire {{ item.resident.flat_number }} ({{ item.resident.first_name }})</span>
+                <span>🗓️ {{ item.created_at|date:"d M Y" }}</span>
+            </div>
+
+            <div class="marketplace-actions">
+                {% if item.contact_phone %}
+                <a href="tel:{{ item.contact_phone }}" class="btn-sm btn-outline" style="flex:1; text-align:center;">
+                    📞 {{ item.contact_phone }}
+                </a>
+                {% endif %}
+                {% if request.user.is_staff or request.user.resident == item.resident %}
+                <form method="POST" action="{% url 'marketplace_toggle' item.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-sm {% if item.is_sold %}btn-outline{% else %}btn-secondary{% endif %}" title="Durumu Değiştir">
+                        {% if item.is_sold %}Yeniden Aç{% else %}Satıldı Yap{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+        <h3>Henüz Pazar İlanı Bulunmuyor</h3>
+        <p class="text-muted">Kullanmadığınız eşyaları satmak veya komşularınızla paylaşmak için ilk ilanı siz verin!</p>
+        <a href="{% url 'marketplace_create' %}" class="btn-sm btn-primary" style="margin-top: 1rem; display: inline-block;">+ İlan Oluştur</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

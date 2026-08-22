@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Yeni İlan Ver - Komşu Pazarı{% endblock %}
+{% block page_title %}🛒 Komşu Pazarı İlanı Ver{% endblock %}
+
+{% block content %}
+<div class="form-container card" style="max-width: 650px; margin: 0 auto;">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">İlan Başlığı *</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="form-error">{{ form.title.errors }}</div>{% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="{{ form.item_type.id_for_label }}">İlan Türü *</label>
+                {{ form.item_type }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.price.id_for_label }}">Fiyat (TL)</label>
+                {{ form.price }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Açıklama & Detaylar *</label>
+            {{ form.description }}
+            {% if form.description.errors %}<div class="form-error">{{ form.description.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.contact_phone.id_for_label }}">İletişim Telefon Numarası</label>
+            {{ form.contact_phone }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.image.id_for_label }}">Ürün Fotoğrafı</label>
+            {{ form.image }}
+            <small class="text-muted" style="display:block; margin-top:0.3rem;">Ürünün net bir fotoğrafını yüklemek ilgiyi artırır.</small>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn-sm btn-primary" style="flex: 1; padding: 0.75rem;">Yayınla</button>
+            <a href="{% url 'marketplace' %}" class="btn-sm btn-outline" style="text-align: center; line-height: 2;">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

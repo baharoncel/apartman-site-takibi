@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Aidat Tahsilat Makbuzu #{{ due.pk }} - AidatPro{% endblock %}
+{% block page_title %}Aidat Tahsilat Makbuzu{% endblock %}
+
+{% block header_actions %}
+<div style="display:flex; gap:0.5rem;">
+    <button onclick="window.print();" class="btn-sm btn-primary">🖨️ Makbuzu Yazdır / PDF İndir</button>
+    <a href="{% url 'dues' %}" class="btn-sm btn-outline">&larr; Aidat Listesi</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-container" id="printable-receipt">
+    <div class="receipt-header">
+        <div class="receipt-logo">
+            <h2>🏢 AİDATPRO SİTE YÖNETİMİ</h2>
+            <p>Resmi Aidat & Gider Tahsilat Makbuzu</p>
+        </div>
+        <div class="receipt-meta">
+            <div><strong>Makbuz No:</strong> #MAK-{{ due.pk|stringformat:"05d" }}</div>
+            <div><strong>Düzenlenme Tarihi:</strong> {% now "d.m.Y - H:i" %}</div>
+            <div><strong>Ödeme Durumu:</strong> <span class="badge badge-success">TAHSİL EDİLDİ</span></div>
+        </div>
+    </div>
+
+    <hr class="receipt-divider">
+
+    <div class="receipt-body">
+        <div class="receipt-info-grid">
+            <div class="receipt-info-box">
+                <h4>👤 Daire Sakini Bilgileri</h4>
+                <p><strong>Ad Soyad:</strong> {{ due.resident.first_name }} {{ due.resident.last_name }}</p>
+                <p><strong>Daire Numarası:</strong> Daire {{ due.resident.flat_number }}</p>
+                <p><strong>Telefon:</strong> {{ due.resident.phone_number|default:"-" }}</p>
+                <p><strong>E-posta:</strong> {{ due.resident.email|default:"-" }}</p>
+            </div>
+            <div class="receipt-info-box">
+                <h4>📋 Tahsilat Detayları</h4>
+                <p><strong>Aidat Dönemi / Kesim:</strong> {{ due.issue_date|date:"d.m.Y" }}</p>
+                <p><strong>Son Ödeme Tarihi:</strong> {{ due.due_date|date:"d.m.Y" }}</p>
+                <p><strong>Ödeme Kanalı:</strong> Online Sistem Portalı (Simülasyon)</p>
+                <p><strong>İşlem Onay Kodu:</strong> AP-TRX-{{ due.pk }}8934</p>
+            </div>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Hizmet / Açıklama</th>
+                    <th>Dönem</th>
+                    <th style="text-align: right;">Tutar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>Aylık Genel Site Yönetim & Aidat Bedeli</strong><br>
+                        <small style="color:var(--text-muted);">Ortak alan temizliği, güvenlik, asansör bakımı, aydınlatma ve çevre düzeni giderleri.</small>
+                    </td>
+                    <td>{{ due.issue_date|date:"F Y" }}</td>
+                    <td style="text-align: right; font-weight:700;">{{ due.amount|floatformat:2 }} TL</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align: right; font-weight: 700; font-size: 1.1rem;">TOPLAM TAHSİLAT:</td>
+                    <td style="text-align: right; font-weight: 800; font-size: 1.25rem; color: var(--success);">{{ due.amount|floatformat:2 }} TL</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="receipt-footer">
+            <div class="receipt-stamp-box">
+                <p><strong>Ödemeyi Yapan:</strong></p>
+                <p>{{ due.resident.first_name }} {{ due.resident.last_name }}</p>
+                <div class="signature-line">(Elektronik Onaylandı)</div>
+            </div>
+            <div class="receipt-stamp-box">
+                <p><strong>Site Yönetimi Onayı:</strong></p>
+                <div class="seal-badge">AİDATPRO YÖNETİM<br>TAHSİL EDİLDİ</div>
+                <div class="signature-line">(Yönetici Kaşe / İmza)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="receipt-legal-note">
+        Bu makbuz 634 sayılı Kat Mülkiyeti Kanunu ve Site Yönetim Planı uyarınca elektronik ortamda düzenlenmiştir. Sistem kayıtları esastır.
+    </div>
+</div>
+{% endblock %}
